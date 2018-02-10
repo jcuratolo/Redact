@@ -1,2 +1,0 @@
-# Redact
-Created with CodeSandbox
