@@ -32,7 +32,7 @@ const LoginForm = redact.component("LoginForm", (props, state, dispatch) => {
   );
 });
 
-redact.event(LOGIN_FORM_UPDATE, (state, payload) => {
+redact.action(LOGIN_FORM_UPDATE, (state, action) => {
   console.log(LOGIN_FORM_UPDATE);
   state.loginForm[payload.name] = payload.value;
   return state;
