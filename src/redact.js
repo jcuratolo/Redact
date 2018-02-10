@@ -5,13 +5,13 @@ import { connect, Provider } from "react-redux";
 
 const redact = {};
 
-redact.events = {};
+redact.actions = {};
 redact.effects = {};
 redact.state = {};
 
-redact.store = createStore((state, event) => {
-  if (!redact.events[event.type]) return state;
-  return Object.assign({}, state, redact.events[event.type](event.payload));
+redact.store = createStore((state, action) => {
+  if (!redact.actions[action.type]) return state;
+  return Object.assign({}, state, redact.actions[action.type](state, action));
 });
 
 redact.render = (RootComponent, target) => {
@@ -23,12 +23,18 @@ redact.render = (RootComponent, target) => {
   );
 };
 
-redact.event = (eventType, handler) => {
-  redact.events[eventType] = handler;
+redact.action = (actionType, handler) => {
+  redact.actions[actionType] = handler;
 };
 
-redact.dispatch = (eventType, payload) => {
-  redact.store.dispatch({ type: eventType, payload });
+redact.dispatch = (actionType, payload, error, meta) => {
+  const action = {};
+  action.type = actionType;
+  action.payload = payload;
+  if (error) action.error = error;
+  if (meta) action.meta = meta;
+
+  redact.store.dispatch(action);
 };
 
 const defaultMapStateToProps = state => state;
