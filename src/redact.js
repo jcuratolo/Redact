@@ -37,9 +37,6 @@ redact.dispatch = (actionType, payload, error, meta) => {
   redact.store.dispatch(action);
 };
 
-const defaultMapStateToProps = state => state;
-const defaultMapDispatchToProps = dispatch => {};
-
 redact.component = (name, renderFn) => {
   const component = class extends React.PureComponent {
     render() {
