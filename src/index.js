@@ -79,3 +79,4 @@ redact.effect("request-complete", function(effects, action) {
 
 redact.dispatch("init-db", {})
 redact.dispatch("get-articles")
+
