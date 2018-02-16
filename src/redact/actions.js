@@ -1,11 +1,10 @@
 export default function install(redact) {
-  const actionRegistry = {}
-
-  redact.action = handler => {
+  redact.actionRegistry = {}
+  redact.action = (id, handler) => {
+    if (!id) throw new Error("Expected a non-empty id")
     if (typeof handler !== "function")
       throw new Error("Expected handler to be a function")
-    if (!handler.name) throw new Error("Expected handler to have a name")
 
-    actionRegistry[handler.name] = handler
+    redact.actionRegistry[id] = handler
   }
 }

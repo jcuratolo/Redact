@@ -1,9 +1,9 @@
-import executors from "./executors";
+export default function(redact) {
+  redact.effectRegistry = {}
+  redact.effect = (id, handler) => {
+    if (typeof handler !== "function")
+      throw new Error("Expected handler to be a function")
 
-export const install = redact => {
-  redact.effectsRegistry = {};
-  redact.effectExecutorRegistry = executors.defaults;
-  redact.registerEffect = (effectType, handler) => {
-    redact.effectsRegistry[effectType] = handler;
-  };
-};
+    redact.effectRegistry[id] = handler
+  }
+}
