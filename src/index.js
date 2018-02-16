@@ -1,41 +1,81 @@
-import React from "react";
-import redact from "./redact";
+import redact from "./redact"
 
-const LOGIN_FORM_SUBMIT = "loginForm.submit";
-const LOGIN_FORM_UPDATE = "loginForm.update";
+redact.action("init-db", function(state, action) {
+  return {
+    ...state,
+    loading: {},
+    users: {}
+  }
+})
 
-const PageTitle = redact.component("PageTitle", (props, state, dispatch) => {
-  return <h1>HERROW!</h1>;
-});
+redact.action("get-articles", function(state, action) {
+  return {
+    articles: {
+      loading: true,
+      didLoad: false
+    }
+  }
+})
 
-const updateLoginForm = dispatch => e =>
-  dispatch("loginForm.update", { name: e.target.name, value: e.target.value });
+const apiUrl = "https://conduit.productionready.io/api"
+const endpoint = path => [apiUrl].concat(path).join("/")
 
-const LoginForm = redact.component("LoginForm", (props, state, dispatch) => {
-  console.log("RENDER");
-  return (
-    <form>
-      <PageTitle />
-      <input
-        type="text"
-        name="email"
-        placeholder="email"
-        onInput={updateLoginForm(dispatch)}
-      />
-      <input
-        type="password"
-        name="password"
-        placeholder="password"
-        onInput={updateLoginForm(dispatch)}
-      />
-    </form>
-  );
-});
+redact.effect("get-articles", function(effects, action) {
+  return {
+    ...effects,
+    http: {
+      ...effects.http,
+      getArticlesRequest: {
+        status: "ready",
+        url: endpoint("articles"),
+        method: "GET",
+        onSuccess: "get-articles-success",
+        onFailure: "api-request-error"
+      }
+    }
+  }
+})
 
-redact.action(LOGIN_FORM_UPDATE, (state, action) => {
-  console.log(LOGIN_FORM_UPDATE);
-  state.loginForm[payload.name] = payload.value;
-  return state;
-});
+redact.action("get-articles-success", function(state, action) {
+  console.log(action)
+  return {
+    ...state,
+    articles: {
+      ...state.articles,
+      articles: {
+        articles: action.payload.data.articles,
+        count: action.payload.data.articlesCount
+      }
+    }
+  }
+})
 
-redact.render(LoginForm, document.getElementById("root"));
+const updateRequestStatus = (request, nextStatus) => {
+  return {
+    ...request,
+    status: nextStatus
+  }
+}
+
+redact.effect("request-sent", function(effects, action) {
+  const requestId = action.payload
+
+  return {
+    ...effects,
+    http: {
+      ...effects.http,
+      ...updateRequestStatus(effects.http[requestId], "in-flight")
+    }
+  }
+})
+
+redact.effect("request-complete", function(effects, action) {
+  const requestId = action.payload
+
+  return {
+    ...effects
+  }
+})
+
+redact.dispatch("init-db", {})
+redact.dispatch("get-articles")
