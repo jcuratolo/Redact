@@ -1,72 +1,33 @@
 import { createStore } from "redux"
 import axios from "axios"
+
 import actions from "./actions"
-import effects from "./effects"
-import component from "./component"
+import effects from './effects'
 
 const redact = {}
 
 actions(redact)
-effects(redact)
+effects.install(redact)
 
 const defaultInitialState = {
   state: {},
   effects: {}
 }
 
-redact.store = createStore(function(state = defaultInitialState, action) {
+redact.store = createStore(function({state, effects} = defaultInitialState, action) {
   const actionHandler = redact.actionRegistry[action.type]
   const effectHandler = redact.effectRegistry[action.type]
 
-  console.table(action)
-
   if (action.type === "@@redux/INIT") return state
+  
+  const nextState = {}
+  
+  if (actionHandler) nextState.state = actionHandler(state, action)
+  if (effectHandler) nextState.effects = effectHandler(effects, action)
 
-  return {
-    state: actionHandler ? actionHandler(state.state, action) : state.state,
-    effects: effectHandler
-      ? effectHandler(state.effects, action)
-      : state.effects
-  }
+  return nextState
 })
 
-const sendRequest = (id, config, dispatch) => {
-  switch (config.method) {
-    case "GET":
-      axios
-        .get(config.url)
-        .then(response => dispatch(config.onSuccess, response))
-        .catch(error => dispatch(config.onFailure, error, true))
-        .then(() => dispatch("request-complete", id))
-
-      dispatch("request-sent", id)
-      return
-
-    default:
-      return
-  }
-}
-
-const httpEffectExecutor = (httpEffects, dispatch) => {
-  if (!httpEffects) return
-
-  Object.keys(httpEffects).forEach(id => {
-    const config = httpEffects[id]
-
-    switch (config.status) {
-      case "ready":
-        return sendRequest(id, config, dispatch)
-      default:
-        return
-    }
-  })
-}
-
-redact.store.subscribe(() => {
-  const state = redact.store.getState()
-
-  httpEffectExecutor(state.effects.http, redact.dispatch)
-})
 
 redact.dispatch = (id, payload = {}, error, meta) => {
   const action = {}
