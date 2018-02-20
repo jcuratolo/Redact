@@ -6,12 +6,7 @@
   "homepage": "https://codesandbox.io/s/new",
   "main": "src/index.js",
   "dependencies": {
-    "@babel/core": "^7.0.0-beta.40",
-    "@babel/register": "^7.0.0-beta.40",
     "axios": "0.17.1",
-    "babel-preset-env": "^1.6.1",
-    "babel-preset-es2017": "^6.24.1",
-    "babel-register": "^6.26.0",
     "react": "16.2.0",
     "react-dom": "16.2.0",
     "react-redux": "5.0.6",
@@ -19,18 +14,11 @@
     "redux": "3.7.2"
   },
   "devDependencies": {
-    "ava": "^0.25.0",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0"
+    "faucet": "0.0.1",
+    "tape": "^4.9.0",
+    "tape-watch": "^2.3.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "ava",
-    "eject": "react-scripts eject"
-  },
-  "ava": {
-    "require": [
-      "@babel/register"
-    ]
+    "test": "tape ./src/**/*.test.js | faucet"
   }
 }

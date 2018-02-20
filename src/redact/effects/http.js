@@ -1,3 +1,4 @@
+// TODO: make id and config last params
 sendRequest = (http, id, config, dispatch) => {
     const { url, method } = config
 
@@ -9,6 +10,7 @@ sendRequest = (http, id, config, dispatch) => {
     }
 }
 
+// TODO: make request last param
 const completeRequest = (id, request, config, dispatch) => {
     const { success, error, always } = config
     
@@ -21,6 +23,7 @@ const completeRequest = (id, request, config, dispatch) => {
         })
 }
 
+// TODO: make httpFx last param
 const processor = (handlers, httpFx, dispatch) => {
     if (!httpFx) return
 
